@@ -55,20 +55,19 @@ Ao verificar a lista de sugestões de patches, a que me interessou foi uma que e
 
 Então inicialmente, nós tinhamos que:
 
-1- entender as macros que nós iríamos usar (a ideia do patch é alterar umas manipulações de bits que estão sendo feitas de maneira manual/hardcodadas por algumas macros definidas no arquivo include/linux/bitfield.h.).
+1- entender as macros que nós iríamos usar (a ideia do patch é alterar algumas manipulações de bits que estão sendo feitas de maneira manual/hardcodadas por algumas macros definidas no arquivo include/linux/bitfield.h.).
 
 2- achar algum arquivo que nós pudéssamos alterar, achamos o seguinte: iio/drivers/iio/adc/mcp3422.c.
 
 Após isso, começamos a fazer o patch de fato:
 
-v1 - Inicialmente, nós apenas alteramos algumas macros e alteramos umas manipulações de bits para usar as macros que definidas
-em bitfield.h
+v1 - Inicialmente, nós apenas alteramos algumas macros e algumas manipulações de bits para usar as macros definidas em bitfield.h
 
-Porém, esse patch foi recusado pois acabamos fazendo mais de uma coisa em um único commit e, além disso, era possível melhorar o código removendo algumas outras macros que não seriam mais necessárias.
+Porém, esse patch foi recusado pois: (1) acabamos fazendo mais de uma coisa em um único commit, (2) não incluímos o bit.h e (3) era possível melhorar o código removendo outras macros que não seriam mais necessárias.
 
-v2 - 1/2: Nesse commit, apenas alteramos algumas macros que estavam definidas (havia mais macros que podiam ser alteradas, mas como elas tinham outros papéis além de manipulação de bits, resolvemos não mexer).
+v2 - 1/2: Nesse commit, apenas alteramos algumas macros que estavam definidas (havia mais macros que podiam ser alteradas, mas como elas tinham outros papéis além de manipulação de bits, resolvemos não mexer) e adicionamos o bit.h.
 
-v2 - 2/2: Nesse commit, realizamos as alterações das manipulações de bits que haviam sidos feitas na primeira versão, além disso, removemos as outras macros que haviam sido pedidas.
+v2 - 2/2: Nesse commit, realizamos as alterações das manipulações de bits que haviam sidos feitas na primeira versão e, além disso, removemos as outras macros que haviam sido pedidas.
    
 Novamente esse patch foi recusado. A primeira parte devido a ordem que algumas macros estavam definidas (o que eu achei um pouco questionável, pois essa ordem já estava defina: a gente não a alterou no nosso patch) e um comentário que não fazia mais sentido. Já a segunda parte, devido a uma formatação: algumas variáveis deviam estar no definition block (novamente, eu achei questionável pois não haviamos alterado isso em nosso patch).
 
@@ -76,4 +75,12 @@ v3 - 1/2 e 2/2: Arrumamos as sugestões/reclamações feitas acima.
 
 E mais uma vez esse patch foi recusado. A primeira parte devido a mensagem do commit estar errada: a resposta que nos foi dada foi uma revisão feita por um agente de IA que mostrou esse erro e uns outros possíveis erros que já estavam presentes (resolvemos não mexer neles pois pareciam mais avançados para gente). Já segunda parte devido a uma outra alteração que podia ser feita no código (basicamente, usar as macros de manipulação de bits em outro lugar que não estavam sendo usado), o que eu não gostei disso é que essa sugestão podia ser feita facilmente em qualquer outra versão, mas ele (Andy Shevchenko) esperou até aqui para apontar isso.
 
-v4 - ainda vamos fazer...
+v4 - 1/2 e 2/2: Arrumamos as sugestões/reclamações feitas acima.
+
+E, finalmente, o patch foi aceito :) .
+
+Agora, para concluir, alguns comentários sobre a minha experiência no geral:
+- Embora tenha sido algo que nos atrapalhou um pouco, eu gostei de ver que os códigos feitos seguem padrões. Algo que, para nós, não faz muita diferença pois só mexemos no código para a disciplina, mas, para quem mexe com mais frequência, deve ajudar muito;
+- Algo que nós não fizemos nas primeiras versões foi responder os emails: somente depois entendemos que era possível e então respondemos um;
+- Achei interessante o momento que nos foi mandado uma correção apontada por uma IA. Porém, não sei na prática o quanto isso faz diferença em um aspecto geral;
+- Por fim, minhas únicas críticas são relacionadas aos momentos que nos foi pedido para alterar algo que já estava no código e aos momentos que demoraram para pedir alguma alteração que podia ser pedida antes.
